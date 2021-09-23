@@ -139,12 +139,14 @@ components:
   parameters:
     application:
       name: applicationId
-      in: query
+      in: path
+      required: true
       schema:
         type: string
     application-request:
       name: requestId
-      in: query
+      in: path
+      required: true
       schema:
         type: string
   requestBodies:
