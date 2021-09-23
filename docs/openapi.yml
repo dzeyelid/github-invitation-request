@@ -1,0 +1,160 @@
+openapi: "3.0.2"
+info:
+  title: GitHub invitaion request API
+  version: "1.0"
+servers:
+  - url: https://localhost:7071/api/v1
+paths:
+  /applications/{applicationId}/requests:
+    post:
+      operationId: request-application
+      description: 招待の申請を行う
+      parameters:
+        - "$ref": "#/components/parameters/application"
+      requestBody:
+        $ref: "#/components/requestBodies/RequestApplication"
+        requested:
+          - githubAccount
+      responses:
+        "201":
+          description: Requested
+  /admin/applications:
+    get:
+      operationId: admin/list-applications
+      responses:
+        "200":
+          description: OK
+          content:
+            "applicaton/json":
+              schema:
+                $ref: "#/components/schemas/applications"
+    post:
+      operationId: admin/create-application
+      requestBody:
+        $ref: "#/components/requestBodies/CreateApplication"
+      responses:
+        "201":
+          description: Created
+  /admin/applications/{applicationId}:
+    get:
+      operationId: admin/show-application
+      parameters:
+        - "$ref": "#/components/parameters/application"
+      responses:
+        "200":
+          description: OK
+          content:
+            "applicaton/json":
+              schema:
+                $ref: "#/components/schemas/application"
+        "400":
+          $ref: "#/components/responses/NotFound"
+  /admin/applications/{applicationId}/requests:
+    get:
+      operationId: admin/list-application-requests
+      parameters:
+        - "$ref": "#/components/parameters/application"
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/applicationRequests"
+        "400":
+          $ref: "#/components/responses/NotFound"
+  /admin/applications/{applicationId}/requests/{requestId}:
+    get:
+      operationId: admin/show-application-request
+      parameters:
+        - "$ref": "#/components/parameters/application"
+        - "$ref": "#/components/parameters/application-request"
+      responses:
+        "200":
+          description: OK
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/applicationRequest"
+        "400":
+          $ref: "#/components/responses/NotFound"
+  /admin/applications/{applicationId}/requests/{requestId}/approve:
+    post:
+      operationId: admin/approve-application-request
+      parameters:
+        - "$ref": "#/components/parameters/application"
+        - "$ref": "#/components/parameters/application-request"
+      responses:
+        "201":
+          description: Created
+  /admin/applications/{applicationId}/requests/{requestId}/refuse:
+    delete:
+      operationId: admin/refuse-application-request
+      parameters:
+        - "$ref": "#/components/parameters/application"
+        - "$ref": "#/components/parameters/application-request"
+      responses:
+        "201":
+          description: Created
+components:
+  schemas:
+    application:
+      type: object
+      properties:
+        org:
+          type: string
+        role:
+          type: string
+          enum:
+            - admin
+            - member
+        teamAssign:
+          type: array
+          items:
+            type: integer
+            example: 1
+    applications:
+      type: array
+      items:
+        $ref: "#/components/schemas/application"
+    applicationRequest:
+      type: object
+      properties:
+        githubAccount:
+          type: string
+        status:
+          type: string
+          enum:
+            - waiting
+            - invited
+            - refused
+          default: waiting
+    applicationRequests:
+      type: array
+      items:
+        $ref: "#/components/schemas/applicationRequest"
+  responses:
+    NotFound:
+      description: Not found
+  parameters:
+    application:
+      name: applicationId
+      in: query
+      schema:
+        type: string
+    application-request:
+      name: requestId
+      in: query
+      schema:
+        type: string
+  requestBodies:
+    CreateApplication:
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/application"
+    RequestApplication:
+      content:
+        "application/json":
+          schema:
+            $ref: "#/components/schemas/applicationRequest"
