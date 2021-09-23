@@ -13,8 +13,6 @@ paths:
         - "$ref": "#/components/parameters/application"
       requestBody:
         $ref: "#/components/requestBodies/RequestApplication"
-        requested:
-          - githubAccount
       responses:
         "201":
           description: Requested
@@ -129,6 +127,8 @@ components:
             - invited
             - refused
           default: waiting
+      required:
+        - githubAccount
     applicationRequests:
       type: array
       items:
